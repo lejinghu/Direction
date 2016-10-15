@@ -40,3 +40,5 @@ class Finished(models.Model):
 
     def __str__(self):
         return self.user.__str__() + "#" + self.task.__str__()
+
+    

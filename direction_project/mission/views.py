@@ -105,3 +105,16 @@ def finish_task(request):
     Finished(user=request.user, task=task, img=request.FILES['picture']).save()
 
     return true_json_response(msg="Task finished")
+
+@login_required
+def get_unfinished_tasks(request):
+    tasks = request.user.relation.joining_mission.tasks.exclude(finished__user=request.user).order_by("num")
+    data = []
+    for task in tasks:
+        dict_data = {"num": task.num,
+                     "lng": task.lng,
+                     "lat": task.lat,
+                     "description": task.description,}
+        data.append(dict_data)
+    
+    return true_json_response(data=data, msg="Get unfinished tasks successfully")
