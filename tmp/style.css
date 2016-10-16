@@ -1,0 +1,101 @@
+	
+
+	#header {
+	background-color: #0262C1;
+	background-repeat:no-repeat;
+	background-position:top left;
+	background-attachment: scroll;
+	width:100%;
+	margin: 0px;
+	padding: 30px 0px 0px 0px;
+	line-height: 100px;
+	vertical-align:middle; 
+	height:           150px;
+	text-align: center;  
+	color: white;
+	font-family: "Microsoft YaHei", "WenQuanYi ZenHei", "SimSun", "Gill Sans MT", Verdana,Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 50px;
+	}
+
+
+	#main {
+	background-color: rgb(218,239,218);
+	position:absolute;
+	top:195px;
+	left: 0;
+	bottom: 0;
+	right: 0;
+
+	}
+	#mainbox{
+	font-size:        20px;
+	width: 100%;
+	height: auto;
+	padding: 40px 0px 0px 0px;
+	text-align:center;
+	vertical-align:middle;
+	}
+	#regbox{
+	font-size:        20px;
+	width:			300px;
+	margin: auto;
+	text-align:center;
+	vertical-align:middle;
+	}
+	#sidebar{
+	float: right;
+	text-align:center;
+	margin:10px 20px 0px 0px;
+	}
+
+	.adminbutton{
+	width:100px; 
+	height:30px; 
+	font-family: "Microsoft YaHei", "WenQuanYi ZenHei", "SimSun", "Gill Sans MT", Verdana,Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	}
+
+	.input{
+	width:200px; height:30px;font-size: 16px; border:1px groove;
+	}
+
+	.reginput{
+	width:150px; height:24px; font-size: 15px; border: 1px ridge #4E7CAD;
+	}
+	.title2{
+		font-size: 17px;
+		font-weight: bold;
+		color: #27368D;
+	}
+	.title3{
+		font-size: 16px;
+		font-weight: bold;
+		color: #27368D;
+	}
+	.input_button {
+	width:180px; 
+	height:37px; 
+	font-size: 20px;
+	}
+	.text1 {    
+	width:200px; 
+	height:120px;
+	}
+	
+	.leftbox1 {
+		FONT-SIZE: 15px;
+		WIDTH: 125px;
+		FONT-FAMILY: arial,helvetica;
+		border: 1px solid #4E7CAD;
+	}
+	.leftbox2 {
+		FONT-SIZE: 15px;
+		WIDTH: 68px;
+		FONT-FAMILY: arial,helvetica;
+		border: 1px solid #4E7CAD;
+	}
+	.leftbox3 {	
+		FONT-FAMILY: arial,helvetica;
+		border: 1px solid #5699D5;
+	}

@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" /> 
+	<title>
+		Main
+	</title>
+
+<script src="request.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.4.4.js"></script>
+<style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 60px;
+		background-color: rgb(218,239,218);
+      }
+
+      /* Custom container */
+      .container {
+        margin: 0 auto;
+        max-width: 1000px;
+		
+      }
+      .container > hr {
+        margin: 60px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 20px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 100px;
+        line-height: 1;
+      }
+      .jumbotron .lead {
+        font-size: 24px;
+        line-height: 1.25;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+
+
+      /* Customize the navbar links to be fill the entire space of the .navbar */
+      .navbar .navbar-inner {
+        padding: 0;
+      }
+      .navbar .nav {
+        margin: 0;
+        display: table;
+        width: 100%;
+      }
+      .navbar .nav li {
+        display: table-cell;
+        width: 1%;
+        float: none;
+      }
+      .navbar .nav li a {
+        font-weight: bold;
+        text-align: center;
+        border-left: 1px solid rgba(255,255,255,.75);
+        border-right: 1px solid rgba(0,0,0,.1);
+      }
+      .navbar .nav li:first-child a {
+        border-left: 0;
+        border-radius: 3px 0 0 3px;
+      }
+      .navbar .nav li:last-child a {
+        border-right: 0;
+        border-radius: 0 3px 3px 0;
+      }
+	  #fullbg { 
+	background-color:gray; 
+	left:0; 
+	opacity:0.5; 
+	position:absolute; 
+	top:0; 
+	z-index:3; 
+	filter:alpha(opacity=50); 
+	-moz-opacity:0.5; 
+	-khtml-opacity:0.5; 
+	} 
+	#dialog { 
+	background-color:#fff; 
+	border:5px solid rgba(0,0,0, 0.4); 
+	height:400px; 
+	left:50%; 
+	margin:-200px 0 0 -200px; 
+	padding:1px; 
+	position:fixed !important; /* 浮动对话框 */ 
+	position:absolute; 
+	top:50%; 
+	width:400px; 
+	z-index:5; 
+	border-radius:5px; 
+	display:none; 
+	} 
+	#dialog p { 
+	margin:0 0 12px; 
+	height:24px; 
+	line-height:24px; 
+	background:#CCCCCC; 
+	} 
+	#dialog p.close { 
+	text-align:right; 
+	padding-right:10px; 
+	} 
+	#dialog p.close a { 
+	color:#fff; 
+	text-decoration:none; 
+	} 
+    </style>
+</head>
+<script>
+//显示灰色 jQuery 遮罩层 
+function showBg() { 
+	$("#dialog").show(); 
+} 
+//关闭灰色 jQuery 遮罩 
+function closeBg() { 
+	$("#dialog").hide(); 
+} 
+function load()
+{
+	_getUnfinishedTasks();
+	map_adjust_probe();
+}
+var tasks=new Array();
+function _getUnfinishedTasks()
+{
+	var obj=_post("http://121.201.68.42:8000/mission/processing/get_unfinished_tasks/",{});
+	init(obj.data);
+	tasks=obj.data;
+	/*
+	var tasks = document.getElementById("tasks");
+	tasks.innerHTML='';
+	var ttable = document.createElement("table");
+	ttable.id="taskstable";
+	ttable.border="1";
+	ttable.align="center";
+	ttable.style.backgroundColor = "silver";
+	var i;
+	var row;
+	var cell;
+	for(i=0;i<obj.data.length;i+=1)
+	{
+		row=ttable.insertRow();
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].num+' '+obj.data[i].lng+' '+obj.data[i].lat+' '+obj.data[i].description+'<br>';
+		cell = row.insertCell();
+		cell.innerHTML='<button onclick="uploadFile('+obj.data[i].num+')">上传数据</button>';
+	}
+	tasks.appendChild(ttable);
+	*/
+}
+var loadFile = function(event) {
+    var output = document.getElementById('output');
+    output.src = URL.createObjectURL(event.target.files[0]);
+  };
+function uploadFile(num)
+{
+	var uploadpanel = document.getElementById("uploadpanel");
+	uploadpanel.innerHTML=document.getElementById('blockOfStuff').innerHTML;
+	document.getElementById("num").value=num;
+	document.getElementById("lng").value=0.01;
+	document.getElementById("lat").value=0.02;
+	showBg();
+}
+</script>
+<script id="blockOfStuff" language="text">
+    <form action="http://121.201.68.42:8000/mission/processing/upload/" enctype="multipart/form-data" method="post">
+	<input id="num" name="num" type=hidden value=""/>
+	<input id="lng" name="lng" type=hidden value=""/>
+	<input id="lat" name="lat" type=hidden value=""/>
+	<img id="output"/>
+	<br>
+	<input name="picture" type="file" onchange="loadFile(event)">
+	<br>
+	<br>
+	<input type="submit" value="上传" />
+	</form>
+</script>
+<script type='text/javascript'
+            src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap'
+            async defer></script>
+    <script type='text/javascript'>
+        function GetMap() {
+			map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+				credentials: 'Your Bing Maps Key'
+			});
+
+            //Define the tile source for the USGS Topo layer.
+            var usgsTopoTileSource = new Microsoft.Maps.TileSource({
+                uriConstructor: 'http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{zoom}/{y}/{x}',
+                minZoom: 1,
+                maxZoom: 15
+            });
+
+            //Create a tile layer from the tile source
+            var usgsTopoTileLayer = new Microsoft.Maps.TileLayer({
+                mercator: usgsTopoTileSource
+            });
+
+            //Add tile layer to the map.
+            map.layers.insert(usgsTopoTileLayer);
+        }
+		function geoFindMe() 
+		{
+			//var output = document.getElementById("out");
+			if (!navigator.geolocation)
+			{
+				alert("your browser cannot support location probing");
+				//output.innerHTML = "<p>your browser cannot support location probing</p>";
+				return;
+			}
+			function success(position) 
+			{
+				var latitude  = position.coords.latitude;
+				var longitude = position.coords.longitude;
+				//alert("Checking...");
+				<!-- output.innerHTML = 'Latitude is ' + latitude + '<br> Longitude is ' + longitude; -->
+				addpin(latitude,longitude);
+			};
+			function error() {
+				alert("cannot get your position");
+				//output.innerHTML = "cannot get your position";
+			};
+			//output.innerHTML = "<p>Locating...</p>";
+			navigator.geolocation.getCurrentPosition(success, error);
+			
+		}
+		function map_adjust_probe()
+		{
+			renew_position=setInterval(function() {geoFindMe()},5000);
+		}
+		function addpin(latitude,longitude)
+		{
+			var pinLocation=new Microsoft.Maps.Location(latitude,longitude);
+			//var pushpin = new Microsoft.Maps.Pushpin(pinLocation,{icon:'http://static.tieba.baidu.com/tb/editor/images/client/image_emoticon25.png',anchor:new Microsoft.Maps.Point(15,15)});
+			//map.entities.push(pushpin);
+			map.setView({center: pinLocation});
+		}
+		function getpin(latitude,longitude)
+		{
+			var pinLocation=new Microsoft.Maps.Location(latitude,longitude);
+			var pushpin=new Microsoft.Maps.Pushpin(pinLocation,null);
+			map.entities.push(pushpin);
+		}
+		function stopwatching()
+		{
+			clearInternal(renew_position);
+			navigator.geolocation.clearWatch(watchID);
+		}
+		function init(input)
+		{
+			for (var i=0; i<input.length; i++)
+			{
+				getpin(input[i].lat,input[i].lng);
+			}
+		}
+		function getMousePos(event) {
+            var e = event || window.event;
+            var scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
+            var scrollY = document.documentElement.scrollTop || document.body.scrollTop;
+            var x = e.pageX || e.clientX + scrollX;
+            var y = e.pageY || e.clientY + scrollY;
+            //alert('x: ' + x + '\ny: ' + y);
+            return { 'x': x, 'y': y };
+        }
+		function Rad(d){
+			return d * Math.PI / 180.0;//经纬度转换成三角函数中度分表形式。
+		}
+		function dist(loc1,loc2)
+		{
+			var lat1=loc1.latitude,lng1=loc1.longitude,lat2=loc2.latitude,lng2=loc2.longitude;
+			var radLat1 = Rad(lat1);
+			var radLat2 = Rad(lat2);
+			var a = radLat1 - radLat2;
+			var b = Rad(lng1) - Rad(lng2);
+			var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a/2),2) +
+			Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));
+			s = s *6378.137 ;// EARTH_RADIUS;
+			s = Math.round(s * 10000) / 10000; //输出为公里
+			return s;
+		}
+		function getClickPos(event)
+		{
+			mapX=map.getPageX(); mapY=map.getPageY();
+			var body=document.getElementById("myMap");  
+			body.onclick=function(event)
+			{
+				mouseX=event.x; mouseY=event.y;
+				var point=new Microsoft.Maps.Point(mouseX-mapX,mouseY-mapY);
+				var loc = map.tryPixelToLocation(point, Microsoft.Maps.PixelReference.control);
+				dis_interval=map.getMetersPerPixel();
+				for (var i=0; i<map.entities.getLength(); i++)
+				{
+					nowpin=map.entities.get(i);
+					var nowloc = nowpin.getLocation();
+					if (dist(loc,nowloc)*1000/dis_interval<=30) 
+					{
+						sessionStorage.i=i;
+						sessionStorage.nowloc=nowloc;
+						navigator.geolocation.getCurrentPosition(suc);
+						
+					}
+				}
+			};  
+		}
+		function suc(position) 
+						{
+							var i=sessionStorage.i;
+							var nowloc=sessionStorage.nowloc;
+							var latitude  = position.coords.latitude;
+							var longitude = position.coords.longitude;
+							var pinLocation=new Microsoft.Maps.Location(latitude,longitude);
+							if (1)//(dist(pinLocation,nowloc)*1000<=5000000) 
+							{
+								uploadFile(tasks[i].num);
+								showBg();
+							}
+							else
+							{
+								alert("You are too far");
+							}
+						};
+</script>
+<body onload="load()">
+<div class="container">
+  <h3 class="muted">Main</h3>
+  <div class="jumbotron">	
+  </div>
+</div> <!-- /container -->
+<div id="fullbg"></div> 
+	<div id="dialog"> 
+	<p class="close"><a href="#" onclick="closeBg();">关闭</a></p> 
+	<div id="uploadpanel">正在加载，请稍后....</div> 
+	</div>
+<div id="myMap" onclick="getClickPos()" style="margin-left: auto;
+margin-right: auto; position:relative;width:600px;height:400px;"></div>
+<div id="out"></div>
+<!--
+<div id="test"><button onclick="map_adjust_probe()">check</button></div>
+<div id="stop"><button onclick="stopwatching()">finish</button></div>
+<div id="load"><button onclick="init()">load map</button></div>
+-->
+</body>
+</html>

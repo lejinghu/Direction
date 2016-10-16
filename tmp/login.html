@@ -1,0 +1,42 @@
+﻿
+
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" /> 
+	<title>
+		Login
+	</title>
+
+<link href="style.css" type=text/css rel=stylesheet>
+<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery
+/jquery-1.4.min.js"></script>
+<script src="request.js"></script>
+</head>
+<body>
+
+	
+	<div id="header">
+	 登录
+	</div>
+	
+	<div id="main">
+
+		<div id="mainbox">
+		<form ACTION="" METHOD="POST">
+		<p class="title2">账号
+			<input type='text' id='username' class="input" placeholder='请输入账号'/>
+		</p>
+		<p class="title2">密码
+			<input	type='password'	id='password' class="input"	 placeholder='请输入密码'/>
+		</p>
+		<button onclick="_login()" class="input_button">登录</button>
+		</form>
+
+		<br>新用户?请<a	id='reg' href='register.html'>注册</a>
+		<br>
+		</div>
+	</div>
+	
+</body>
+</html>

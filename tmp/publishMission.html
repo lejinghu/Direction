@@ -1,0 +1,310 @@
+﻿<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+	<title>
+		PublishMission
+	</title>
+
+	<script src="request.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.4.4.js"></script>
+
+<style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 60px;
+		background-color: rgb(218,239,218);
+      }
+
+      /* Custom container */
+      .container {
+        margin: 0 auto;
+        max-width: 1000px;
+
+      }
+      .container > hr {
+        margin: 60px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 0px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 100px;
+        line-height: 1;
+      }
+      .jumbotron .lead {
+        font-size: 24px;
+        line-height: 1.25;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+
+
+      /* Customize the navbar links to be fill the entire space of the .navbar */
+      .navbar .navbar-inner {
+        padding: 0;
+      }
+      .navbar .nav {
+        margin: 0;
+        display: table;
+        width: 100%;
+      }
+      .navbar .nav li {
+        display: table-cell;
+        width: 1%;
+        float: none;
+      }
+      .navbar .nav li a {
+        font-weight: bold;
+        text-align: center;
+        border-left: 1px solid rgba(255,255,255,.75);
+        border-right: 1px solid rgba(0,0,0,.1);
+      }
+      .navbar .nav li:first-child a {
+        border-left: 0;
+        border-radius: 3px 0 0 3px;
+      }
+      .navbar .nav li:last-child a {
+        border-right: 0;
+        border-radius: 0 3px 3px 0;
+      }
+	#fullbg { 
+	background-color:gray; 
+	left:0; 
+	opacity:0.5; 
+	position:absolute; 
+	top:0; 
+	z-index:3; 
+	filter:alpha(opacity=50); 
+	-moz-opacity:0.5; 
+	-khtml-opacity:0.5; 
+	} 
+	#dialog { 
+	background-color:#fff; 
+	border:5px solid rgba(0,0,0, 0.4); 
+	height:400px; 
+	left:50%; 
+	margin:-200px 0 0 -200px; 
+	padding:1px; 
+	position:fixed !important; /* 浮动对话框 */ 
+	position:absolute; 
+	top:50%; 
+	width:400px; 
+	z-index:5; 
+	border-radius:5px; 
+	display:none; 
+	} 
+	#dialog p { 
+	margin:0 0 12px; 
+	height:24px; 
+	line-height:24px; 
+	background:#CCCCCC; 
+	} 
+	#dialog p.close { 
+	text-align:right; 
+	padding-right:10px; 
+	} 
+	#dialog p.close a { 
+	color:#fff; 
+	text-decoration:none; 
+	} 
+    </style>
+</head>
+ 
+<script>
+//显示灰色 jQuery 遮罩层 
+function showBg() { 
+	$("#dialog").show(); 
+} 
+//关闭灰色 jQuery 遮罩 
+function closeBg() { 
+	$("#dialog").hide(); 
+} 
+</script>
+  <script type='text/javascript'
+            src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap'
+            async defer></script>
+<script type='text/javascript'>
+        function GetMap() {
+            /*var map = new Microsoft.Maps.Map('#myMap', {
+                credentials: 'Your Bing Maps Key',
+                mapTypeId: Microsoft.Maps.MapTypeId.mercator, //Hide the base map tile layer.
+                maxZoom: 15, //Tiles are only available for the first 15 zoom levels.
+                center: new Microsoft.Maps.Location(40, -99),
+                zoom: 4,
+                showDashboard: false 
+            });*/
+			map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+				credentials: 'Your Bing Maps Key'
+			});
+
+            //Define the tile source for the USGS Topo layer.
+            var usgsTopoTileSource = new Microsoft.Maps.TileSource({
+                uriConstructor: 'http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{zoom}/{y}/{x}',
+                minZoom: 1,
+                maxZoom: 15
+            });
+
+            //Create a tile layer from the tile source
+            var usgsTopoTileLayer = new Microsoft.Maps.TileLayer({
+                mercator: usgsTopoTileSource
+            });
+
+            //Add tile layer to the map.
+            map.layers.insert(usgsTopoTileLayer);
+
+        }
+		function imitateClick(oElement,iClientX,iClientY){  
+			var oEvent;  
+			if (document.createEventObject) {  
+				oEvent=document.createEventObject();  
+				oEvent.clientX=iClientX;  
+				oEvent.clientY=iClientY;  
+				oElement.fireEvent("onclick",oEvent);  
+			}else{  
+				oEvent=document.createEvent("MouseEvents");  
+				oEvent.initMouseEvent("click",true,true,document.defaultView,0,0,0,iClientX,iClientY);  
+				oElement.dispatchEvent(oEvent);  
+			}  
+		}  
+		function Rad(d){
+			return d * Math.PI / 180.0;//经纬度转换成三角函数中度分表形式。
+		}
+		function dist(loc1,loc2)
+		{
+			var lat1=loc1.latitude,lng1=loc1.longitude,lat2=loc2.latitude,lng2=loc2.longitude;
+			var radLat1 = Rad(lat1);
+			var radLat2 = Rad(lat2);
+			var a = radLat1 - radLat2;
+			var b = Rad(lng1) - Rad(lng2);
+			var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a/2),2) +
+			Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));
+			s = s *6378.137 ;// EARTH_RADIUS;
+			s = Math.round(s * 10000) / 10000; //输出为公里
+			return s;
+		}
+		var descriptions=new Array();
+		function addpin(loc)
+		{
+			var pushpin = new Microsoft.Maps.Pushpin(loc,{icon:'http://static.tieba.baidu.com/tb/editor/images/client/image_emoticon25.png',
+														  anchor:new Microsoft.Maps.Point(15,15)});
+			map.entities.push(pushpin);
+			var description=prompt("Please Add Description","");
+			descriptions.push(description);
+		}
+		function getClickPos(event)
+		{
+			mapX=map.getPageX(); mapY=map.getPageY();
+			var body=document.getElementById("myMap");  
+			body.onclick=function(event)
+			{
+				mouseX=event.clientX; mouseY=event.clientY;
+				var point=new Microsoft.Maps.Point(mouseX-mapX,mouseY-mapY);
+				var loc = map.tryPixelToLocation(point, Microsoft.Maps.PixelReference.control);
+				dis_interval=map.getMetersPerPixel();
+				if (map.entities.getLength()==0)
+				{
+					addpin(loc);
+				}
+				else
+				{
+					var flag=0;
+					for (var i=0; i<map.entities.getLength(); i++)
+					{
+						nowpin=map.entities.get(i);
+						var nowloc = nowpin.getLocation();
+						if (dist(loc,nowloc)*1000/dis_interval<=50)
+						{
+							map.entities.removeAt(i);
+							descriptions.splice(i,1);
+							flag=1; break;
+						}
+					}
+					if (flag==0){
+						addpin(loc);
+						
+					}
+				}
+			};  
+		}
+	
+		function submit()
+		{
+		
+			var tasks=new Array();
+			for (var i=0; i<map.entities.getLength(); i++)
+			{
+				nowpin=map.entities.get(i);
+				nowloc = nowpin.getLocation();
+				var task={lat:nowloc.latitude,
+						lng:nowloc.longitude,
+						num:i,
+						description:descriptions[i]
+				}
+				/*tasks[i].lat=nowloc.latitude;
+				tasks[i].lng=nowloc.longitude;
+				tasks[i].num=i;
+				tasks[i].description=descriptions[i];*/
+				tasks.push(task);
+			}
+			var min_member_count=document.getElementById('min_member_count').value;
+			var max_member_count=document.getElementById('max_member_count').value;
+			var title=document.getElementById('title').value;
+			var start_time=document.getElementById('start_time').value;
+			var end_time=document.getElementById('end_time').value;
+			var description=document.getElementById('description').value;
+			var json = {
+				tasks : tasks,
+				min_member_count : min_member_count,
+				max_member_count : max_member_count,
+				title : title,
+				start_time : start_time,
+				end_time : end_time,
+				description:description
+			};
+			alert(title);
+			var obj=_post("http://121.201.68.42:8000/mission/add/",json);
+			alert(obj.msg);
+			return false;
+			}
+</script>
+<body >
+<div class="container">
+  <h3 class="muted">Publish Mission</h3>
+   <button onclick="window.location.href='missionList.html'">任务列表</button>
+  <div class="jumbotron">
+	 <div id="myMap" onclick="getClickPos(event)" style="margin-left: auto;
+margin-right: auto;position:relative;width:600px;height:400px;"></div>
+	<!-- <div id="p"></div> -->
+	<div>开始时间 
+		<input type="text"  id="start_time" style="width:100px;height:15px"/>
+	</div>
+	<div>结束时间 
+		<input type="text"  id="end_time" style="width:100px;height:15px"/>
+	</div>
+	<div>人数限制 
+		<input type="text"  id="min_member_count" style="width:50px;height:15px"/> -
+		<input type="text"  id="max_member_count" style="width:50px;height:15px"/>
+	</div>
+	<div>标题<input type="text" id="title"/></div>
+	<div>简介<input type="text" id="description"/></div>
+	<div><button onclick="submit()">submit</button></div>
+	</div> 
+  </div>
+</div> <!-- /container -->
+	
+</body>
+</html>

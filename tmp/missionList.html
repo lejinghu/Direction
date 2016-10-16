@@ -1,0 +1,324 @@
+﻿<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+	<title>
+		MissionList
+	</title>
+
+	<script src="request.js"></script>
+	<script src="map1html.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.4.4.js"></script>
+
+<style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 60px;
+		background-color: rgb(218,239,218);
+      }
+
+      /* Custom container */
+      .container {
+        margin: 0 auto;
+        max-width: 1000px;
+
+      }
+      .container > hr {
+        margin: 60px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 20px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 100px;
+        line-height: 1;
+      }
+      .jumbotron .lead {
+        font-size: 24px;
+        line-height: 1.25;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+
+
+      /* Customize the navbar links to be fill the entire space of the .navbar */
+      .navbar .navbar-inner {
+        padding: 0;
+      }
+      .navbar .nav {
+        margin: 0;
+        display: table;
+        width: 100%;
+      }
+      .navbar .nav li {
+        display: table-cell;
+        width: 1%;
+        float: none;
+      }
+      .navbar .nav li a {
+        font-weight: bold;
+        text-align: center;
+        border-left: 1px solid rgba(255,255,255,.75);
+        border-right: 1px solid rgba(0,0,0,.1);
+      }
+      .navbar .nav li:first-child a {
+        border-left: 0;
+        border-radius: 3px 0 0 3px;
+      }
+      .navbar .nav li:last-child a {
+        border-right: 0;
+        border-radius: 0 3px 3px 0;
+      }
+	#fullbg { 
+	background-color:gray; 
+	left:0; 
+	opacity:0.5; 
+	position:absolute; 
+	top:0; 
+	z-index:3; 
+	filter:alpha(opacity=50); 
+	-moz-opacity:0.5; 
+	-khtml-opacity:0.5; 
+	} 
+	#dialog { 
+	background-color:#fff; 
+	border:5px solid rgba(0,0,0, 0.4); 
+	height:400px; 
+	left:50%; 
+	margin:-200px 0 0 -200px; 
+	padding:1px; 
+	position:fixed !important; /* 浮动对话框 */ 
+	position:absolute; 
+	top:50%; 
+	width:400px; 
+	z-index:5; 
+	border-radius:5px; 
+	display:none; 
+	} 
+	#dialog p { 
+	margin:0 0 12px; 
+	height:24px; 
+	line-height:24px; 
+	background:#CCCCCC; 
+	} 
+	#dialog p.close { 
+	text-align:right; 
+	padding-right:10px; 
+	} 
+	#dialog p.close a { 
+	color:#fff; 
+	text-decoration:none; 
+	} 
+    </style>
+</head>
+ <script type='text/javascript'
+            src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap'
+            async defer>
+</script>
+<script type='text/javascript'>
+        function GetMap() {
+			map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+				credentials: 'Your Bing Maps Key'
+			});
+
+            //Define the tile source for the USGS Topo layer.
+            var usgsTopoTileSource = new Microsoft.Maps.TileSource({
+                uriConstructor: 'http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{zoom}/{y}/{x}',
+                minZoom: 1,
+                maxZoom: 15
+            });
+
+            //Create a tile layer from the tile source
+            var usgsTopoTileLayer = new Microsoft.Maps.TileLayer({
+                mercator: usgsTopoTileSource
+            });
+
+            //Add tile layer to the map.
+            map.layers.insert(usgsTopoTileLayer);
+			//init(input);
+        }
+		function init(input)
+		{
+			for (var i=0; i<input.length; i++)
+			{
+				getpin(input[i].lat,input[i].lng);
+			}
+			map.setView({center:new Microsoft.Maps.Location(input[0].lat,input[0].lng),})
+		}
+		function getpin(latitude,longitude)
+		{
+			var pinLocation=new Microsoft.Maps.Location(latitude,longitude);
+			var pushpin=new Microsoft.Maps.Pushpin(pinLocation,null);
+			map.entities.push(pushpin);
+		}
+</script>
+<script>
+//显示灰色 jQuery 遮罩层 
+function showBg() { 
+	$("#dialog").show(); 
+} 
+//关闭灰色 jQuery 遮罩 
+function closeBg() { 
+	$("#dialog").hide(); 
+} 
+function load()
+{
+/*
+	var d = dialog({
+		title: '欢迎',
+		content: '欢迎使用 artDialog 对话框组件！'
+	});
+	d.show();*/
+	var obj=_post("http://121.201.68.42:8000/mission/get_all/",{});
+	//alert(obj.data[0].id)
+	var div = document.getElementById("missions");
+    var table = document.createElement("table");
+	table.id="missiontable";
+	table.border="1";
+	table.align="center";
+	table.style.backgroundColor = "white";
+	var i;
+	var row;
+	var cell;
+	row = table.insertRow();
+	row.id=i;
+	//cell = row.insertCell();
+	//cell.innerHTML="ID"
+	cell = row.insertCell();
+	cell.innerHTML="title";
+	cell = row.insertCell();
+	cell.innerHTML="description";
+	cell = row.insertCell();
+	cell.innerHTML="start_time";
+	cell = row.insertCell();
+	cell.innerHTML="end_time";
+	cell = row.insertCell();
+	cell.innerHTML="min_member";
+	cell = row.insertCell();
+	cell.innerHTML="max_member";
+	cell = row.insertCell();
+	cell.innerHTML="st_lng";
+	cell = row.insertCell();
+	cell.innerHTML="st_lat";
+	cell = row.insertCell();
+	cell.innerHTML="详细";
+	cell = row.insertCell();
+	cell.innerHTML="加入";
+	for(i=0;i<obj.data.length;i+=1)
+	{
+		row = table.insertRow();
+		row.id=i;
+		//cell = row.insertCell();
+		//cell.innerHTML=obj.data[i].id;
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].title;
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].description;
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].start_time;
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].end_time;
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].min_member_count;
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].max_member_count;
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].st_lng;
+		cell = row.insertCell();
+		cell.innerHTML=obj.data[i].st_lat;
+		cell = row.insertCell();
+		cell.innerHTML='<button onclick="_seeDetail('+obj.data[i].id+')">查看详细</button>';
+		cell = row.insertCell();
+		cell.innerHTML='<button onclick="_join('+obj.data[i].id+')">加入</button>';
+	}
+	/*
+	row = table.insertRow();
+	var x=-1;
+	row.id=x;
+	cell = row.insertCell();
+	cell.innerHTML='任务测试';
+	cell = row.insertCell();
+	cell.innerHTML='<button onclick="_seeDetail('+x+')">查看详细</button>';
+	cell = row.insertCell();
+	cell.innerHTML='<button onclick="_join('+x+')">加入</button>';
+	*/
+	div.appendChild(table);
+	
+}
+function _seeDetail(id){
+	var json = {
+        id : id
+    };
+	var obj=_post("http://121.201.68.42:8000/mission/get/",json);
+	/*var detail = document.getElementById("detail");
+	detail.innerHTML='';
+	var dtable = document.createElement("table");
+	dtable.id="detailtable";
+	dtable.border="1";
+	dtable.align="center";
+	dtable.style.backgroundColor = "silver";
+	var i;
+	var row=dtable.insertRow();
+	var cell;
+	for(i=0;i<obj.data.tasks.length;i+=1)
+	{
+		cell = row.insertCell();
+		cell.innerHTML=obj.data.tasks[i].num+' '+obj.data.tasks[i].lng+' '+obj.data.tasks[i].lat+' '+obj.data.tasks[i].description+'<br>';
+	}
+	detail.appendChild(dtable);*/
+	//var myinput = new Array();
+	//myinput=[];
+	//myinput[0]={"x":31,"y":121};
+	init(obj.data.tasks);
+	showBg();
+    return false;
+
+}
+function _join(id){
+	var json = {
+        id : id
+    };
+	var obj=_post("http://121.201.68.42:8000/mission/join/",json);
+	alert(obj.msg);
+    return false;
+}
+function _newMission(id){
+	var json = {
+        id : id
+    };
+	var obj=_post("http://121.201.68.42:8000/mission/join/",json);
+	alert(obj.msg);
+    return false;
+}
+</script>
+
+<body onload="load()">
+<div class="container">
+  <h3 class="muted">Mission Select</h3>
+    <button onclick="window.location.href='publishMission.html'">发布任务</button>
+  <div class="jumbotron">
+	<div id="missions"></div>
+	</div> 
+  </div>
+</div> <!-- /container -->
+	<div id="fullbg"></div> 
+	<div id="dialog"> 
+		<p class="close"><a href="#" onclick="closeBg();">关闭</a></p> 
+		<!--<div id="detail"></div> -->
+		<div id="myMap" style="position:relative;width:600px;height:350px;"></div>
+	</div>
+</body>
+</html>
